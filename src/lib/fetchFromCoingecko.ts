@@ -1,4 +1,3 @@
-// src/lib/fetchFromCoingecko.ts
 import axios from "axios";
 
 export async function fetchFromCoingecko() {
