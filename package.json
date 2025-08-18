@@ -6,6 +6,7 @@
     "dev": "npm-run-all --parallel rabbitmq app",
     "rabbitmq": "CONF_ENV_FILE=\"/opt/homebrew/etc/rabbitmq/rabbitmq-env.conf\" /opt/homebrew/opt/rabbitmq/sbin/rabbitmq-server",
     "app": "next dev",
+    "worker": "ts-node -P tsconfig.worker.json src/workers/cryptoWorker.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -15,7 +16,8 @@
     "axios": "^1.11.0",
     "next": "15.4.4",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "redis": "^5.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -28,6 +30,7 @@
     "eslint-config-next": "15.4.4",
     "npm-run-all": "^4.1.5",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
