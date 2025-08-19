@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { getRealtimeData } from "@/lib/getRealtimeData";
 import { CryptoCoin } from "@/types/coinType";
 
@@ -21,22 +22,44 @@ export default async function DashboardPage() {
         </thead>
         <tbody>
           {realtimeData?.map((coin: CryptoCoin) => (
-            <tr key={coin.id} className="hover:bg-gray-50">
-              <td className="py-2 px-4 border-b text-black">{coin.name}</td>
+            <tr key={coin.id} className="hover:bg-gray-50 cursor-pointer">
               <td className="py-2 px-4 border-b text-black">
-                {coin.symbol.toUpperCase()}
+                <Link
+                  href={`/dashboard/${coin.id}`}
+                  className="block w-full h-full"
+                >
+                  {coin.name}
+                </Link>
               </td>
               <td className="py-2 px-4 border-b text-black">
-                ${coin.current_price.toFixed(2)}
+                <Link
+                  href={`/dashboard/${coin.id}`}
+                  className="block w-full h-full"
+                >
+                  {coin.symbol.toUpperCase()}
+                </Link>
+              </td>
+              <td className="py-2 px-4 border-b text-black">
+                <Link
+                  href={`/dashboard/${coin.id}`}
+                  className="block w-full h-full"
+                >
+                  ${coin.current_price.toFixed(2)}
+                </Link>
               </td>
               <td
-                className={`py-2 px-4 border-b text-black ${
+                className={`py-2 px-4 border-b ${
                   coin.price_change_percentage_24h >= 0
                     ? "text-green-600"
                     : "text-red-600"
                 }`}
               >
-                {coin.price_change_percentage_24h.toFixed(2)}%
+                <Link
+                  href={`/dashboard/${coin.id}`}
+                  className="block w-full h-full"
+                >
+                  {coin.price_change_percentage_24h.toFixed(2)}%
+                </Link>
               </td>
             </tr>
           ))}
