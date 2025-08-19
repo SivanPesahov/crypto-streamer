@@ -3,18 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel rabbitmq app",
+    "dev": "npm-run-all --parallel rabbitmq app scheduler",
     "rabbitmq": "CONF_ENV_FILE=\"/opt/homebrew/etc/rabbitmq/rabbitmq-env.conf\" /opt/homebrew/opt/rabbitmq/sbin/rabbitmq-server",
     "app": "next dev",
     "worker": "ts-node -P tsconfig.worker.json src/workers/cryptoWorker.ts",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "scheduler": "ts-node -P tsconfig.worker.json src/scheduler/fetchScheduler.ts"
   },
   "dependencies": {
     "amqplib": "^0.10.8",
     "axios": "^1.11.0",
     "next": "15.4.4",
+    "node-cron": "^4.2.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "redis": "^5.8.1"

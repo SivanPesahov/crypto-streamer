@@ -1,5 +1,6 @@
 import { connectRabbitMQ } from "../lib/rabbitmq";
 import { connectRedis, redis } from "../lib/redis";
+import { REDIS_KEYS } from "../constants/redisKeys";
 
 async function startWorker() {
   await connectRedis();
@@ -10,10 +11,11 @@ async function startWorker() {
 
   console.log(`👷 Worker listening on queue "${queue}"...`);
 
-  channel.consume(queue, (msg) => {
+  channel.consume(queue, async (msg) => {
     if (msg !== null) {
       const content = msg.content.toString();
       const coins = JSON.parse(content);
+      await redis.set(REDIS_KEYS.CRYPTO_REALTIME, JSON.stringify(coins));
 
       coins.forEach(async (coin: any) => {
         const drop = coin.price_change_percentage_24h;
@@ -25,10 +27,8 @@ async function startWorker() {
             )}%`
           );
 
-          const redisKey = `drop:${coin.id}`;
-
           await redis.set(
-            redisKey,
+            `${REDIS_KEYS.DROP}: ${coin.id}`,
             JSON.stringify({
               name: coin.name,
               symbol: coin.symbol,

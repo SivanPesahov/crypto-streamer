@@ -1,10 +1,12 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-      "module": "CommonJS",
-      "moduleResolution": "node",
-      "noEmit": false,
-      "outDir": "dist-worker"
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist-worker",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
     },
-    "include": ["src/workers/**/*"]
-  }
+    "module": "CommonJS"
+  },
+  "include": ["src/workers/**/*"]
+}
