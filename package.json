@@ -7,6 +7,8 @@
     "rabbitmq": "CONF_ENV_FILE=\"/opt/homebrew/etc/rabbitmq/rabbitmq-env.conf\" /opt/homebrew/opt/rabbitmq/sbin/rabbitmq-server",
     "app": "next dev",
     "worker": "ts-node -P tsconfig.worker.json src/workers/cryptoWorker.ts",
+    "worker:risers-and-fallers": "ts-node -P tsconfig.worker.json src/workers/cryptoRisersAndFallersWorker.ts",
+    "workers": "npm-run-all --parallel worker worker:risers-and-fallers",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -8,8 +8,9 @@ type Props = {
 };
 
 export default async function CoinPage({ params }: Props) {
+  const { coinId } = await params;
   const realtimeData = await getRealtimeData();
-  const coin = realtimeData?.find((c) => c.id === params.coinId);
+  const coin = realtimeData?.find((c) => c.id === coinId);
 
   if (!coin) {
     return <div className="p-6 text-red-600">Coin not found.</div>;
