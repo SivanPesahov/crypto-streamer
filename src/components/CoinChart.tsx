@@ -1,16 +1,13 @@
 "use client";
 
-import { Bar } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 type Props = {
   current_price: number;
@@ -27,28 +24,40 @@ export default function CoinChart({
   }));
 
   return (
-    <div className="mt-6 bg-white p-4 rounded shadow">
-      <h2 className="text-lg font-semibold mb-2">
-        Simulated Price Chart (7 Days)
-      </h2>
-      <Bar
-        data={{
-          labels: priceChanges.map((entry) => entry.day),
-          datasets: [
-            {
-              label: "Price ($)",
-              data: priceChanges.map((entry) => entry.value.toFixed(2)),
-              backgroundColor: "rgba(99, 102, 241, 0.5)",
-            },
-          ],
-        }}
-        options={{
-          responsive: true,
-          plugins: {
-            legend: { position: "top" as const },
-          },
-        }}
-      />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>7-Day Simulated Price Trend</CardTitle>
+        <CardDescription>
+          Visual representation of the simulated daily price fluctuations over
+          the past week.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={priceChanges}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <XAxis
+              dataKey="day"
+              stroke="hsl(var(--foreground))"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: "#ffffff" }}
+            />
+            <YAxis
+              stroke="hsl(var(--foreground))"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => "$" + value}
+              tick={{ fill: "#ffffff" }}
+            />
+            <Bar dataKey="value" fill="#ffffff" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 }

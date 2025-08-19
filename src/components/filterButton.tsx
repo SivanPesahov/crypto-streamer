@@ -17,13 +17,17 @@ export function FilterButton({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded ${
+      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-in-out shadow-sm ${
         isActive
-          ? `${colorClass} font-semibold`
-          : "bg-gray-200 hover:bg-gray-300"
+          ? `${colorClass} bg-blue-100  border border-blue-300`
+          : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-100"
       }`}
     >
-      {label}
+      <span className="flex items-center gap-1">
+        {filterValue === "risers" && <span>↑</span>}
+        {filterValue === "fallers" && <span>↓</span>}
+        {label}
+      </span>
     </button>
   );
 }

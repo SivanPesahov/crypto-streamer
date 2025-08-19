@@ -17,18 +17,18 @@ export default async function CoinPage({ params }: Props) {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">
+    <>
+      <h1 className="text-3xl font-semibold mb-4">
         {coin.name} ({coin.symbol.toUpperCase()})
       </h1>
-      <p className="text-black mb-2">
+      <p className="text-neutral-300 mb-2">
         Current Price: ${coin.current_price.toFixed(2)}
       </p>
       <p
-        className={`text-black ${
+        className={`mb-4 ${
           coin.price_change_percentage_24h >= 0
-            ? "text-green-600"
-            : "text-red-600"
+            ? "text-green-400"
+            : "text-red-400"
         }`}
       >
         24h Change: {coin.price_change_percentage_24h.toFixed(2)}%
@@ -37,6 +37,6 @@ export default async function CoinPage({ params }: Props) {
         current_price={coin.current_price}
         price_change_percentage_24h={coin.price_change_percentage_24h}
       />
-    </div>
+    </>
   );
 }

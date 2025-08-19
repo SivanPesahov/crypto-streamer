@@ -4,6 +4,15 @@ import { CryptoCoin } from "@/types/coinType";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { FilterButton } from "./filterButton";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type Props = {
   allData: CryptoCoin[] | null;
@@ -21,63 +30,102 @@ export default function DashboardClient({ allData, risers, fallers }: Props) {
   if (filter === "fallers") filteredData = fallers;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Crypto Dashboard</h1>
-      <div className="flex gap-4 mb-4">
+    <div>
+      <div className="border-b border-neutral-800 mb-6 pb-2">
+        <h1 className="text-3xl font-semibold tracking-tight text-center text-neutral-100">
+          Crypto Market Dashboard
+        </h1>
+      </div>
+      <div className="flex justify-center gap-4 mb-8">
         <FilterButton
           label="All"
           filterValue={null}
           currentFilter={filter}
           onClick={() => router.push("/dashboard")}
-          colorClass="bg-gray-300"
+          colorClass="bg-neutral-700 hover:bg-neutral-600 text-white"
         />
         <FilterButton
           label="Top Risers"
           filterValue="risers"
           currentFilter={filter}
           onClick={() => router.push("/dashboard?filter=risers")}
-          colorClass="bg-green-300"
+          colorClass="bg-neutral-700 hover:bg-neutral-600 text-white"
         />
         <FilterButton
           label="Top Fallers"
           filterValue="fallers"
           currentFilter={filter}
           onClick={() => router.push("/dashboard?filter=fallers")}
-          colorClass="bg-red-300"
+          colorClass="bg-neutral-700 hover:bg-neutral-600 text-white"
         />
       </div>
-      <table className="min-w-full border border-gray-300">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border px-4 py-2 text-left">Name</th>
-            <th className="border px-4 py-2 text-left">Symbol</th>
-            <th className="border px-4 py-2 text-right">Price</th>
-            <th className="border px-4 py-2 text-right">% 24h</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData?.map((coin) => (
-            <tr key={coin.id} className="hover:bg-gray-50">
-              <td className="border px-4 py-2">
-                <Link href={`/dashboard/${coin.id}`}>{coin.name}</Link>
-              </td>
-              <td className="border px-4 py-2 uppercase">{coin.symbol}</td>
-              <td className="border px-4 py-2 text-right">
-                ${coin.current_price.toLocaleString()}
-              </td>
-              <td
-                className={`border px-4 py-2 text-right ${
-                  coin.price_change_percentage_24h >= 0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+      <div className="rounded-2xl border border-neutral-800 shadow-md bg-neutral-950">
+        <Table>
+          <TableCaption>
+            {filter === "risers"
+              ? "Top Rising Coins"
+              : filter === "fallers"
+              ? "Top Falling Coins"
+              : "All Crypto Market Data"}
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-neutral-400 font-semibold uppercase text-xs tracking-wider bg-neutral-800">
+                Name
+              </TableHead>
+              <TableHead className="text-neutral-400 font-semibold uppercase text-xs tracking-wider bg-neutral-800">
+                Symbol
+              </TableHead>
+              <TableHead className="text-right text-neutral-400 font-semibold uppercase text-xs tracking-wider bg-neutral-800">
+                Price
+              </TableHead>
+              <TableHead className="text-right text-neutral-400 font-semibold uppercase text-xs tracking-wider bg-neutral-800">
+                % 24h
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredData?.map((coin) => (
+              <TableRow
+                key={coin.id}
+                className="odd:bg-neutral-900 even:bg-neutral-950 hover:bg-neutral-800 hover:shadow-inner transition-colors duration-200"
               >
-                {coin.price_change_percentage_24h.toFixed(2)}%
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <TableCell className="text-sm font-semibold text-neutral-200 hover:underline">
+                  <Link href={`/dashboard/${coin.id}`}>{coin.name}</Link>
+                </TableCell>
+                <TableCell className="text-sm uppercase text-neutral-400">
+                  {coin.symbol}
+                </TableCell>
+                <TableCell className="text-sm text-right font-mono text-neutral-200">
+                  ${coin.current_price.toLocaleString()}
+                </TableCell>
+                <TableCell className="text-sm text-right">
+                  <span
+                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                      coin.price_change_percentage_24h >= 0
+                        ? "bg-green-900 text-green-300"
+                        : "bg-red-900 text-red-300"
+                    }`}
+                  >
+                    {coin.price_change_percentage_24h >= 0 ? "▲" : "▼"}
+                    {coin.price_change_percentage_24h.toFixed(2)}%
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
+            {filteredData?.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="text-sm text-center py-10 text-neutral-500 italic"
+                >
+                  🚫 No coins found for this filter.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
