@@ -1,3 +1,4 @@
+import cron from "node-cron";
 import { fetchFromCoingecko } from "../lib/fetchFromCoingecko";
 import { publishToQueue } from "../lib/publishToQueue";
 
@@ -9,7 +10,6 @@ async function sendHistoryRequests() {
     if (index >= coins.length) {
       console.log("✅ Done sending all coin history requests");
       clearInterval(interval);
-      setTimeout(main, 24 * 60 * 60 * 1000);
       return;
     }
 
@@ -35,3 +35,8 @@ async function main() {
 }
 
 main();
+
+cron.schedule("0 0 * * *", async () => {
+  console.log("🕛 Scheduled task: Fetching coin history...");
+  await main();
+});
