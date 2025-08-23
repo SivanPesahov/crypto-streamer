@@ -1,9 +1,13 @@
 import { connectRabbitMQ } from "./rabbitmq";
 
-export async function publishToQueue(queueName: string, message: any) {
+export async function publishToQueue(
+  queueName: string,
+  message: any,
+  durable = true
+) {
   const { connection, channel } = await connectRabbitMQ();
 
-  await channel.assertQueue(queueName, { durable: false });
+  await channel.assertQueue(queueName, { durable });
 
   channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)));
 

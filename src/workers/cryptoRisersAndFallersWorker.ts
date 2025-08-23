@@ -9,7 +9,7 @@ async function startRisersWorker() {
     const { connection, channel } = await connectRabbitMQ();
     const queue = "crypto-data";
 
-    await channel.assertQueue(queue, { durable: false });
+    await channel.assertQueue(queue, { durable: true });
 
     console.log("[RisersWorker] Waiting for messages...");
 

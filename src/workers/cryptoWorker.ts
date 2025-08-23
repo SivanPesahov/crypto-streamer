@@ -7,7 +7,7 @@ async function startWorker() {
   const { connection, channel } = await connectRabbitMQ();
   const queue = "crypto-data";
 
-  await channel.assertQueue(queue, { durable: false });
+  await channel.assertQueue(queue, { durable: true });
 
   console.log(`👷 Worker listening on queue "${queue}"...`);
 
@@ -16,30 +16,6 @@ async function startWorker() {
       const content = msg.content.toString();
       const coins = JSON.parse(content);
       await redis.set(REDIS_KEYS.CRYPTO_REALTIME, JSON.stringify(coins));
-
-      coins.forEach(async (coin: any) => {
-        const drop = coin.price_change_percentage_24h;
-
-        if (drop < -5) {
-          console.log(
-            `🔻 ${coin.name} (${coin.symbol.toUpperCase()}): ${drop.toFixed(
-              2
-            )}%`
-          );
-
-          await redis.set(
-            `${REDIS_KEYS.DROP}: ${coin.id}`,
-            JSON.stringify({
-              name: coin.name,
-              symbol: coin.symbol,
-              price: coin.current_price,
-              drop_percent: drop,
-              timestamp: new Date().toISOString(),
-            })
-          );
-        }
-      });
-
       channel.ack(msg);
     }
   });

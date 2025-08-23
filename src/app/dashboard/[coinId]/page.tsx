@@ -1,5 +1,6 @@
 import { getRealtimeData } from "@/lib/getRealtimeData";
 import CoinChart from "@/components/CoinChart";
+import { getStoredCoinHistory } from "@/services/getStoredCoinHistory";
 
 type Props = {
   params: {
@@ -11,6 +12,9 @@ export default async function CoinPage({ params }: Props) {
   const { coinId } = await params;
   const realtimeData = await getRealtimeData();
   const coin = realtimeData?.find((c) => c.id === coinId);
+
+  const coinHistory = await getStoredCoinHistory(coinId);
+  console.log("coinHistory:", coinHistory);
 
   if (!coin) {
     return <div className="p-6 text-red-600">Coin not found.</div>;
@@ -33,10 +37,7 @@ export default async function CoinPage({ params }: Props) {
       >
         24h Change: {coin.price_change_percentage_24h.toFixed(2)}%
       </p>
-      <CoinChart
-        current_price={coin.current_price}
-        price_change_percentage_24h={coin.price_change_percentage_24h}
-      />
+      <CoinChart prices={coinHistory} />
     </>
   );
 }

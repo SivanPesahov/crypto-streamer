@@ -10,17 +10,13 @@ import {
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 type Props = {
-  current_price: number;
-  price_change_percentage_24h: number;
+  prices: { date: string; price: number }[];
 };
 
-export default function CoinChart({
-  current_price,
-  price_change_percentage_24h,
-}: Props) {
-  const priceChanges = Array.from({ length: 7 }, (_, i) => ({
+export default function CoinChart({ prices }: Props) {
+  const formattedData = prices.map((entry, i) => ({
     day: `Day ${i + 1}`,
-    value: current_price * (1 + price_change_percentage_24h / 100) ** (i - 6),
+    value: entry.price,
   }));
 
   return (
@@ -35,7 +31,7 @@ export default function CoinChart({
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart
-            data={priceChanges}
+            data={formattedData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <XAxis
