@@ -14,7 +14,6 @@ export default async function CoinPage({ params }: Props) {
   const coin = realtimeData?.find((c) => c.id === coinId);
 
   const coinHistory = await getStoredCoinHistory(coinId);
-  console.log("coinHistory:", coinHistory);
 
   if (!coin) {
     return <div className="p-6 text-red-600">Coin not found.</div>;
