@@ -1,6 +1,7 @@
 import { getRealtimeData } from "@/lib/getRealtimeData";
 import CoinChart from "@/components/CoinChart";
 import { getStoredCoinHistory } from "@/services/getStoredCoinHistory";
+import CoinDetails from "@/components/CoinDetails";
 
 type Props = {
   params: {
@@ -12,6 +13,7 @@ export default async function CoinPage({ params }: Props) {
   const { coinId } = await params;
   const realtimeData = await getRealtimeData();
   const coin = realtimeData?.find((c) => c.id === coinId);
+  console.log(coin);
 
   const coinHistory = await getStoredCoinHistory(coinId);
 
@@ -21,14 +23,18 @@ export default async function CoinPage({ params }: Props) {
 
   return (
     <>
-      <h1 className="text-3xl font-semibold mb-4">
+      <h1 className="text-4xl font-bold mb-4 text-white">
         {coin.name} ({coin.symbol.toUpperCase()})
       </h1>
-      <p className="text-neutral-300 mb-2">
-        Current Price: ${coin.current_price.toFixed(2)}
+
+      <p className="text-xl text-neutral-300 mb-1">
+        Current Price:{" "}
+        <span className="font-medium text-white">
+          ${coin.current_price.toFixed(2)}
+        </span>
       </p>
       <p
-        className={`mb-4 ${
+        className={`text-md mb-6 font-medium ${
           coin.price_change_percentage_24h >= 0
             ? "text-green-400"
             : "text-red-400"
@@ -36,7 +42,12 @@ export default async function CoinPage({ params }: Props) {
       >
         24h Change: {coin.price_change_percentage_24h.toFixed(2)}%
       </p>
-      <CoinChart prices={coinHistory} />
+
+      <div className="bg-[#1a1a1a] rounded-lg p-4 shadow-md mb-8">
+        <CoinChart prices={coinHistory} />
+      </div>
+
+      <CoinDetails coin={coin} />
     </>
   );
 }
