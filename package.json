@@ -17,8 +17,13 @@
     "history": "tsx src/scheduler/historyScheduler.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.1",
+    "@prisma/client": "^6.14.0",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "amqplib": "^0.10.8",
     "axios": "^1.11.0",
+    "bcrypt": "^6.0.0",
     "chart.js": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -26,18 +31,23 @@
     "lucide-react": "^0.540.0",
     "mysql2": "^3.14.3",
     "next": "15.4.4",
+    "next-auth": "^4.24.11",
     "node-cron": "^4.2.1",
+    "prisma": "^6.14.0",
     "react": "19.1.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "19.1.0",
+    "react-hook-form": "^7.62.0",
     "recharts": "^2.15.4",
     "redis": "^5.8.1",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/amqplib": "^0.10.7",
+    "@types/bcrypt": "^6.0.0",
     "@types/chart.js": "^2.9.41",
     "@types/node": "^20",
     "@types/react": "^19",

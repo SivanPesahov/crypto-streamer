@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  name         String?
+  passwordHash String
+  role         Role           @default(USER)
+  favorites    FavoriteCoin[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model FavoriteCoin {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  coinId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, coinId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model daily_prices {
+  id         Int       @id @default(autoincrement())
+  coin_id    String?   @db.VarChar(100)
+  symbol     String?   @db.VarChar(20)
+  name       String?   @db.VarChar(100)
+  price_usd  Decimal?  @db.Decimal(18, 8)
+  date       DateTime? @db.Date
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+}
