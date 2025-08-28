@@ -8,7 +8,7 @@ export async function GET(
   const { coinId } = params;
 
   try {
-    const prices = await getCoinHistory(coinId, 7);
+    const prices = await getCoinHistory(coinId, 6);
 
     const dailyMap = new Map<string, number>();
 

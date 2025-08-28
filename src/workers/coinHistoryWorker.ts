@@ -27,13 +27,11 @@ async function startWorker() {
         console.log(`📦 Got ${history.length} entries for: ${coinId}`);
         console.log("📦 Raw history from API:", history);
 
-        const today = new Date();
         const connection = await pool.getConnection();
 
-        await connection.execute(
-          `DELETE FROM daily_prices WHERE coin_id = ? AND date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)`,
-          [coinId]
-        );
+        await connection.execute(`DELETE FROM daily_prices WHERE coin_id = ?`, [
+          coinId,
+        ]);
 
         const groupedByDate = new Map<string, [number, number][]>();
         for (const [timestamp, price] of history) {
@@ -43,7 +41,10 @@ async function startWorker() {
           }
           groupedByDate.get(date)!.push([timestamp, price]);
         }
-        for (const [date, entries] of groupedByDate) {
+        const dates = Array.from(groupedByDate.keys()).sort();
+        const last7Dates = dates.slice(-7);
+        for (const date of last7Dates) {
+          const entries = groupedByDate.get(date)!;
           const [timestamp, price] = entries[0];
           console.log(`📥 Inserting for ${coinId} on ${date}: $${price}`);
           await connection.execute(

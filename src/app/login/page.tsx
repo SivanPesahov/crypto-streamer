@@ -1,14 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
-
+import { redirect } from "next/navigation";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -19,64 +10,76 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import LockIcon from "@/ui/icons/lockIcon";
 import EmailIcon from "@/ui/icons/emailIcon";
-import AuthSpinner from "@/ui/spinners/authSpinner";
-import PasswordInput from "@/components/passwordInput";
 import FormSubmitButton from "@/components/formSubmitButton";
+
+import { signIn } from "@/auth";
 
 const LoginSchema = z.object({
   email: z.string().email("Please enter a valid email."),
   password: z.string().min(6, "Password must be at least 6 characters."),
 });
 
-export default function LoginPage() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const redirectTo = params.get("callbackUrl") || "/dashboard";
+async function loginAction(formData: FormData) {
+  "use server";
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const email = String(formData.get("email") || "").trim();
+  const password = String(formData.get("password") || "").trim();
+  const callbackUrl = String(formData.get("callbackUrl") || "/dashboard");
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
-    defaultValues: { email: "", password: "" },
-  });
-
-  async function onSubmit(values: z.infer<typeof LoginSchema>) {
-    setError(null);
-    setLoading(true);
-    try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        email: values.email,
-        password: values.password,
-        callbackUrl: redirectTo,
-      });
-
-      if (!res) {
-        setError("Unexpected error.");
-        return;
-      }
-      if (res.error) {
-        setError("Invalid email or password.");
-        return;
-      }
-      router.push(res.url || redirectTo);
-    } catch {
-      setError("Server error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const parsed = LoginSchema.safeParse({ email, password });
+  if (!parsed.success) {
+    const firstErr = parsed.error.issues[0]?.message || "Invalid input.";
+    redirect(`/login?error=${encodeURIComponent(firstErr)}`);
   }
+
+  if (typeof signIn !== "function") {
+    return redirect(
+      `/login?error=${encodeURIComponent(
+        "next-auth v5 signIn missing (import from @/auth)"
+      )}`
+    );
+  }
+
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: callbackUrl,
+    });
+  } catch (err) {
+    const e = err as any;
+    if (
+      e &&
+      typeof e === "object" &&
+      typeof e.digest === "string" &&
+      e.digest.startsWith("NEXT_REDIRECT")
+    ) {
+      throw err;
+    }
+    if (e && typeof e === "object") {
+      if (typeof e.type === "string") {
+        return redirect(`/login?error=${encodeURIComponent(e.type)}`);
+      }
+      if (typeof e.message === "string") {
+        return redirect(`/login?error=${encodeURIComponent(e.message)}`);
+      }
+    }
+    return redirect(`/login?error=${encodeURIComponent("Unknown error")}`);
+  }
+}
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const errorParam =
+    typeof params?.error === "string" ? params.error : undefined;
+  const callbackUrl =
+    typeof params?.callbackUrl === "string" ? params.callbackUrl : "/dashboard";
 
   return (
     <div className="min-h-screen grid place-items-center p-6 bg-[radial-gradient(1000px_600px_at_10%_-20%,hsl(var(--primary)/0.12),transparent),radial-gradient(800px_500px_at_90%_120%,hsl(var(--secondary)/0.12),transparent)]">
@@ -94,84 +97,74 @@ export default function LoginPage() {
           <CardAction></CardAction>
         </CardHeader>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="contents"
-            noValidate
-          >
-            <CardContent className="space-y-5">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <span className="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
-                          <EmailIcon />
-                        </span>
-                        <Input
-                          type="email"
-                          inputMode="email"
-                          placeholder="m@example.com"
-                          autoComplete="email"
-                          className="h-11 rounded-lg pl-9"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        {/* Server Action form */}
+        <form action={loginAction} className="contents" noValidate>
+          <input type="hidden" name="callbackUrl" value={callbackUrl} />
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
-                      <a
-                        href="#"
-                        className="text-sm text-muted-foreground underline-offset-4 hover:underline"
-                      >
-                        Forgot password?
-                      </a>
-                    </div>
-                    <FormControl>
-                      <div className="relative">
-                        <span className="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
-                          <LockIcon />
-                        </span>
-                        <PasswordInput field={field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                    {error && (
-                      <p className="mt-1 text-sm text-red-600" role="alert">
-                        {error}
-                      </p>
-                    )}
-                  </FormItem>
-                )}
-              />
-            </CardContent>
+          <CardContent className="space-y-5">
+            <div>
+              <label className="mb-1 block text-sm font-medium">Email</label>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
+                  <EmailIcon />
+                </span>
+                <Input
+                  type="email"
+                  name="email"
+                  inputMode="email"
+                  placeholder="m@example.com"
+                  autoComplete="email"
+                  className="h-11 rounded-lg pl-9"
+                  required
+                />
+              </div>
+            </div>
 
-            <CardFooter className="flex flex-col gap-2">
-              <FormSubmitButton text1={"loading"} text2={"Log in"} />
-
-              <p className="text-center text-sm text-muted-foreground">
-                Don&apos;t have an account?{" "}
-                <a className="underline underline-offset-4" href="/register">
-                  Create one
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="mb-1 block text-sm font-medium">
+                  Password
+                </label>
+                <a
+                  href="#"
+                  className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+                >
+                  Forgot password?
                 </a>
+              </div>
+              <div className="relative">
+                <span className="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
+                  <LockIcon />
+                </span>
+                <Input
+                  type="password"
+                  name="password"
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  className="h-11 rounded-lg pl-9"
+                  required
+                />
+              </div>
+            </div>
+
+            {errorParam && (
+              <p className="mt-1 text-sm text-red-600" role="alert">
+                {errorParam}
               </p>
-            </CardFooter>
-          </form>
-        </Form>
+            )}
+          </CardContent>
+
+          <CardFooter className="flex flex-col gap-2">
+            <FormSubmitButton text1="Loading" text2="Log in" />
+
+            <p className="text-center text-sm text-muted-foreground">
+              Don&apos;t have an account?{" "}
+              <a className="underline underline-offset-4" href="/register">
+                Create one
+              </a>
+            </p>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );

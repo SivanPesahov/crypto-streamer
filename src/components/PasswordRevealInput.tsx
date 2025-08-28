@@ -5,13 +5,13 @@ import { Input } from "@/components/ui/input";
 import LockIcon from "@/ui/icons/lockIcon";
 
 type Props = {
-  name?: string; // default: "password"
-  minLength?: number; // default: 6
-  autoComplete?: string; // default: "current-password"
-  placeholder?: string; // default: "At least 6 characters"
-  className?: string; // extra classes for the <Input>
-  id?: string; // optional id for label-for accessibility
-  "aria-describedby"?: string; // optional aria for error/help text
+  name?: string;
+  minLength?: number;
+  autoComplete?: string;
+  placeholder?: string;
+  className?: string;
+  id?: string;
+  "aria-describedby"?: string;
 };
 
 export default function PasswordRevealInput({

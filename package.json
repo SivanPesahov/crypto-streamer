@@ -31,7 +31,7 @@
     "lucide-react": "^0.540.0",
     "mysql2": "^3.14.3",
     "next": "15.4.4",
-    "next-auth": "^4.24.11",
+    "next-auth": "beta",
     "node-cron": "^4.2.1",
     "prisma": "^6.14.0",
     "react": "19.1.0",

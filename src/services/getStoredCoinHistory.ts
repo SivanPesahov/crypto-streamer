@@ -1,7 +1,6 @@
 import { pool } from "../lib/mysql";
 
 export async function getStoredCoinHistory(coinId: string) {
-  console.log(`Cache miss for ${coinId}, querying MySQL...`);
   const [rows] = await pool.execute<any[]>(
     `SELECT date, price_usd FROM daily_prices WHERE coin_id = ? ORDER BY date ASC`,
     [coinId]

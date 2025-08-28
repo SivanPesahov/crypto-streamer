@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -208,7 +207,7 @@ export default function RegisterPage() {
                   "Register"
                 )}
               </Button> */}
-              <FormSubmitButton text1={"Loading"} text2={"Register"} />
+              <FormSubmitButton text1={"loading"} text2={"Register"} />
 
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}

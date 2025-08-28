@@ -13,7 +13,6 @@ export default async function CoinPage({ params }: Props) {
   const { coinId } = await params;
   const realtimeData = await getRealtimeData();
   const coin = realtimeData?.find((c) => c.id === coinId);
-  console.log(coin);
 
   const coinHistory = await getStoredCoinHistory(coinId);
 

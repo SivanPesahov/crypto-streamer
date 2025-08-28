@@ -22,7 +22,6 @@ export async function POST(req: Request) {
 
     const { email, password, name } = parsed.data;
 
-    // 1) Check if user already exists
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return NextResponse.json(
@@ -31,10 +30,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2) Hash password
     const passwordHash = await hash(password, 10);
 
-    // 3) Create user
     const user = await prisma.user.create({
       data: {
         email,
