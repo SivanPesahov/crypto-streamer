@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { upsertFavoriteWithMeta } from "@/lib/favorites";
 
 async function resolveUserId() {
   const session = await auth();
@@ -50,6 +51,14 @@ export async function POST(req: Request) {
     .toLowerCase();
   const action: "add" | "remove" = body?.action;
 
+  const rawName = typeof body?.name === "string" ? body.name : undefined;
+  const rawSymbol = typeof body?.symbol === "string" ? body.symbol : undefined;
+  const rawImage = typeof body?.image === "string" ? body.image : undefined;
+
+  const metaName = rawName?.trim() || undefined;
+  const metaSymbol = rawSymbol ? rawSymbol.trim().toUpperCase() : undefined;
+  const metaImage = rawImage?.trim() || undefined;
+
   if (!coinId) {
     return NextResponse.json({ error: "coinId is required" }, { status: 400 });
   }
@@ -62,10 +71,10 @@ export async function POST(req: Request) {
 
   try {
     if (action === "add") {
-      await prisma.favoriteCoin.upsert({
-        where: { userId_coinId: { userId, coinId } },
-        update: {},
-        create: { userId, coinId },
+      await upsertFavoriteWithMeta(userId, coinId, {
+        name: metaName,
+        symbol: metaSymbol,
+        image: metaImage,
       });
     } else {
       await prisma.favoriteCoin.deleteMany({ where: { userId, coinId } });

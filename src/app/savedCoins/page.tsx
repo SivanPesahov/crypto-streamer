@@ -29,34 +29,15 @@ export default async function SavedCoinsPage() {
 
   const savedCoins = await prisma.favoriteCoin.findMany({
     where: { userId: dbUser.id },
+    select: {
+      id: true,
+      coinId: true,
+      coinName: true,
+      coinSymbol: true,
+      coinImage: true,
+    },
   });
-  const ids = savedCoins.map((c) => c.coinId).filter(Boolean);
-  let nameMap: Record<
-    string,
-    { name: string; symbol?: string; image?: string; price?: number }
-  > = {};
-  if (ids.length) {
-    try {
-      const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&sparkline=true&ids=${encodeURIComponent(
-        ids.join(",")
-      )}`;
-      const res = await fetch(url, { next: { revalidate: 300 } });
-      if (res.ok) {
-        const data = (await res.json()) as any[];
-        nameMap = Object.fromEntries(
-          data.map((d: any) => [
-            d.id,
-            {
-              name: d.name,
-              symbol: d.symbol?.toUpperCase?.(),
-              image: d.image,
-              price: d.current_price,
-            },
-          ])
-        );
-      }
-    } catch (e) {}
-  }
+
   const historyEntries = await Promise.all(
     savedCoins.map(async (c) => {
       try {
@@ -88,7 +69,11 @@ export default async function SavedCoinsPage() {
               </li>
             ) : (
               savedCoins.map((coin) => {
-                const meta = nameMap[coin.coinId];
+                const meta = {
+                  name: coin.coinName,
+                  symbol: coin.coinSymbol?.toUpperCase?.() ?? "",
+                  image: coin.coinImage,
+                } as const;
                 return (
                   <li
                     key={coin.id}
@@ -102,7 +87,7 @@ export default async function SavedCoinsPage() {
                       />
                     ) : null}
                     <span>
-                      {meta
+                      {meta?.name
                         ? `${meta.name} (${meta.symbol ?? ""})`
                         : coin.coinId}
                     </span>

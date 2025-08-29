@@ -15,6 +15,7 @@ import { prisma } from "@/lib/prisma";
 import { DashboardHeader } from "./dashboardheader";
 import { FilterNav } from "./filterButton";
 import { FavoriteButton } from "./favoriteButton";
+import { upsertFavoriteWithMeta } from "@/lib/favorites";
 
 type Props = {
   allData: CryptoCoin[] | null;
@@ -57,11 +58,27 @@ export default async function DashboardClient({
     const action = String(formData.get("action") || "");
     if (!coinId || (action !== "add" && action !== "remove")) return;
 
+    let metaName: string | null = null;
+    let metaSymbol: string | null = null;
+    let metaImage: string | null = null;
+    try {
+      const fromProps = (allData || [])
+        .concat(risers || [])
+        .concat(fallers || [])
+        .find((c) => c.id === coinId);
+      if (fromProps) {
+        metaName = fromProps.name ?? null;
+        metaSymbol = (fromProps.symbol ?? null) as any;
+        metaImage = (fromProps as any).image ?? null;
+      }
+      if (metaSymbol) metaSymbol = String(metaSymbol).toUpperCase();
+    } catch {}
+
     if (action === "add") {
-      await prisma.favoriteCoin.upsert({
-        where: { userId_coinId: { userId, coinId } },
-        update: {},
-        create: { userId, coinId },
+      await upsertFavoriteWithMeta(userId, coinId, {
+        name: metaName ?? undefined,
+        symbol: metaSymbol ?? undefined,
+        image: metaImage ?? undefined,
       });
     } else {
       await prisma.favoriteCoin.deleteMany({ where: { userId, coinId } });
