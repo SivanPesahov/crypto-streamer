@@ -15,6 +15,7 @@ import FormSubmitButton from "@/components/formSubmitButton";
 import LockIcon from "@/ui/icons/lockIcon";
 import EmailIcon from "@/ui/icons/emailIcon";
 import UsernameIcon from "@/ui/icons/usernameIcon";
+import PasswordInput from "@/components/passwordInput";
 
 const RegisterSchema = z.object({
   name: z
@@ -95,12 +96,11 @@ export default async function RegisterPage({
                 <span className="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
                   <LockIcon />
                 </span>
-                <Input
-                  type="password"
+                <PasswordInput
                   name="password"
                   placeholder="••••••••"
-                  autoComplete="new-password"
-                  className="h-11 rounded-lg pl-9"
+                  autoComplete="current-password"
+                  className="h-11 rounded-lg pl-9 pr-10"
                   required
                 />
               </div>

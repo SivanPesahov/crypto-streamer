@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import PasswordInput from "@/components/passwordInput";
 import LockIcon from "@/ui/icons/lockIcon";
 import EmailIcon from "@/ui/icons/emailIcon";
 import FormSubmitButton from "@/components/formSubmitButton";
@@ -97,7 +98,6 @@ export default async function LoginPage({
           <CardAction></CardAction>
         </CardHeader>
 
-        {/* Server Action form */}
         <form action={loginAction} className="contents" noValidate>
           <input type="hidden" name="callbackUrl" value={callbackUrl} />
 
@@ -136,12 +136,11 @@ export default async function LoginPage({
                 <span className="pointer-events-none absolute inset-y-0 left-3 grid place-items-center">
                   <LockIcon />
                 </span>
-                <Input
-                  type="password"
+                <PasswordInput
                   name="password"
                   placeholder="••••••••"
                   autoComplete="current-password"
-                  className="h-11 rounded-lg pl-9"
+                  className="h-11 rounded-lg pl-9 pr-10"
                   required
                 />
               </div>
