@@ -6,6 +6,7 @@ async function startWorker() {
   const { connection, channel } = await connectRabbitMQ();
   const QUEUE_NAME = "coin-history-request";
   await channel.assertQueue(QUEUE_NAME, { durable: true });
+  await channel.prefetch(1);
   console.log(`👷 Listening on queue "${QUEUE_NAME}"`);
 
   channel.consume(
@@ -13,8 +14,11 @@ async function startWorker() {
     async (msg) => {
       if (!msg) return;
       try {
-        const { coinId } = JSON.parse(msg.content.toString());
+        const { coinId, name, symbol, image } = JSON.parse(
+          msg.content.toString()
+        );
         console.log(`📡 Fetching history for: ${coinId}`);
+        console.log("📩 Message payload:", { coinId, name, symbol, image });
         const history: Array<[number, number]> = await getCoinHistory(
           coinId,
           7
@@ -25,7 +29,6 @@ async function startWorker() {
           return;
         }
         console.log(`📦 Got ${history.length} entries for: ${coinId}`);
-        console.log("📦 Raw history from API:", history);
 
         const connection = await pool.getConnection();
 
@@ -48,9 +51,16 @@ async function startWorker() {
           const [timestamp, price] = entries[0];
           console.log(`📥 Inserting for ${coinId} on ${date}: $${price}`);
           await connection.execute(
-            `INSERT INTO daily_prices (coin_id, symbol, name, price_usd, date)
-             VALUES (?, ?, ?, ?, ?)`,
-            [coinId, coinId.slice(0, 4), coinId, price, date]
+            `INSERT INTO daily_prices (coin_id, symbol, name, image_url, price_usd, date)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+              coinId,
+              symbol?.toUpperCase() ?? coinId.slice(0, 4).toUpperCase(),
+              name ?? coinId,
+              image ?? null,
+              price,
+              date,
+            ]
           );
         }
         connection.release();

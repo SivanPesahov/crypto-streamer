@@ -2,7 +2,7 @@ import cron from "node-cron";
 import { fetchFromCoingecko } from "../lib/fetchFromCoingecko";
 import { publishToQueue } from "../lib/publishToQueue";
 
-let coins: string[] = [];
+let coins: any;
 
 async function sendHistoryRequests() {
   let index = 0;
@@ -13,12 +13,18 @@ async function sendHistoryRequests() {
       return;
     }
 
-    const coinId = coins[index];
+    const coin = coins[index];
+
     try {
-      await publishToQueue("coin-history-request", { coinId });
-      console.log(`📤 Sent coin-history request for ${coinId}`);
+      await publishToQueue("coin-history-request", {
+        coinId: coin.id,
+        name: coin.name,
+        symbol: coin.symbol,
+        image: coin.image,
+      });
+      console.log(`📤 Sent coin-history request for ${coin.id}`);
     } catch (err) {
-      console.error(`❌ Failed to send request for ${coinId}`, err);
+      console.error(`❌ Failed to send request for ${coin.id}`, err);
     }
 
     index++;
@@ -27,7 +33,7 @@ async function sendHistoryRequests() {
 
 async function main() {
   try {
-    coins = (await fetchFromCoingecko()).map((coin: any) => coin.id);
+    coins = await fetchFromCoingecko();
     await sendHistoryRequests();
   } catch (err) {
     console.error("❌ Error sending coin history requests", err);
