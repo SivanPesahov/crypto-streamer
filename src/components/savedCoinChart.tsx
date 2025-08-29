@@ -11,7 +11,6 @@ import {
 
 export type SparklinePoint = { date: string; price: number };
 
-// Minimal sparkline (no axes, tiny tooltip), meant for list rows
 export default function SavedCoinSparkline({
   prices,
   height = 56,
