@@ -1,9 +1,5 @@
-"use client";
-
 import { CryptoCoin } from "@/types/coinType";
-import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { FilterButton } from "./filterButton";
 import {
   Table,
   TableBody,
@@ -13,17 +9,68 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { DashboardHeader } from "./dashboardheader";
+import { FilterNav } from "./filterButton";
+import { FavoriteButton } from "./favoriteButton";
 
 type Props = {
   allData: CryptoCoin[] | null;
   risers: CryptoCoin[];
   fallers: CryptoCoin[];
+  isLoggedIn?: boolean;
+  initialFavorites?: string[];
+  filter?: string | null;
 };
 
-export default function DashboardClient({ allData, risers, fallers }: Props) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const filter = searchParams.get("filter");
+export default async function DashboardClient({
+  allData,
+  risers,
+  fallers,
+  isLoggedIn = false,
+  initialFavorites = [],
+  filter = null,
+}: Props) {
+  async function toggleFavorite(formData: FormData) {
+    "use server";
+    const session = await auth();
+    if (!session?.user) return;
+
+    const rawId = (session.user as any).id;
+    let userId = Number(rawId);
+    if (!rawId || Number.isNaN(userId)) {
+      const email = session.user?.email ?? undefined;
+      if (!email) return;
+      const userRow = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true },
+      });
+      if (!userRow) return;
+      userId = userRow.id;
+    }
+
+    const coinId = String(formData.get("coinId") || "")
+      .trim()
+      .toLowerCase();
+    const action = String(formData.get("action") || "");
+    if (!coinId || (action !== "add" && action !== "remove")) return;
+
+    if (action === "add") {
+      await prisma.favoriteCoin.upsert({
+        where: { userId_coinId: { userId, coinId } },
+        update: {},
+        create: { userId, coinId },
+      });
+    } else {
+      await prisma.favoriteCoin.deleteMany({ where: { userId, coinId } });
+    }
+
+    revalidatePath("/dashboard");
+  }
+
+  const favSet = new Set((initialFavorites || []).map(String));
 
   let filteredData = allData;
   if (filter === "risers") filteredData = risers;
@@ -31,34 +78,8 @@ export default function DashboardClient({ allData, risers, fallers }: Props) {
 
   return (
     <div>
-      <div className="border-b border-neutral-800 mb-6 pb-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-center text-neutral-100">
-          Crypto Market Dashboard
-        </h1>
-      </div>
-      <div className="flex justify-center gap-4 mb-8">
-        <FilterButton
-          label="All"
-          filterValue={null}
-          currentFilter={filter}
-          onClick={() => router.push("/dashboard")}
-          colorClass="bg-neutral-700 hover:bg-neutral-600 text-white"
-        />
-        <FilterButton
-          label="Top Risers"
-          filterValue="risers"
-          currentFilter={filter}
-          onClick={() => router.push("/dashboard?filter=risers")}
-          colorClass="bg-neutral-700 hover:bg-neutral-600 text-white"
-        />
-        <FilterButton
-          label="Top Fallers"
-          filterValue="fallers"
-          currentFilter={filter}
-          onClick={() => router.push("/dashboard?filter=fallers")}
-          colorClass="bg-neutral-700 hover:bg-neutral-600 text-white"
-        />
-      </div>
+      <DashboardHeader />
+      <FilterNav filter={filter} />
       <div className="rounded-2xl border border-neutral-800 shadow-md bg-neutral-950">
         <Table>
           <TableCaption>
@@ -70,6 +91,11 @@ export default function DashboardClient({ allData, risers, fallers }: Props) {
           </TableCaption>
           <TableHeader>
             <TableRow>
+              {isLoggedIn && (
+                <TableHead className="w-[60px] text-center text-neutral-400 font-semibold uppercase text-xs tracking-wider bg-neutral-800">
+                  Fav
+                </TableHead>
+              )}
               <TableHead className="text-neutral-400 font-semibold uppercase text-xs tracking-wider bg-neutral-800">
                 Name
               </TableHead>
@@ -90,6 +116,15 @@ export default function DashboardClient({ allData, risers, fallers }: Props) {
                 key={coin.id}
                 className="odd:bg-neutral-900 even:bg-neutral-950 hover:bg-neutral-800 hover:shadow-inner transition-colors duration-200"
               >
+                {isLoggedIn && (
+                  <TableCell className="text-center">
+                    <FavoriteButton
+                      coinId={coin.id}
+                      isFavorite={favSet.has(coin.id)}
+                      toggleFavorite={toggleFavorite}
+                    />
+                  </TableCell>
+                )}
                 <TableCell className="text-sm font-semibold text-neutral-200 hover:underline">
                   <Link href={`/dashboard/${coin.id}`}>{coin.name}</Link>
                 </TableCell>
@@ -116,7 +151,7 @@ export default function DashboardClient({ allData, risers, fallers }: Props) {
             {filteredData?.length === 0 && (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={isLoggedIn ? 5 : 4}
                   className="text-sm text-center py-10 text-neutral-500 italic"
                 >
                   🚫 No coins found for this filter.

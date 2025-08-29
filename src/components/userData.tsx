@@ -9,10 +9,12 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import LoginUserDataButton from "./loginUserDataButton";
+import { Session } from "next-auth";
 
-export async function UserData() {
-  const session = await auth();
-
+type Props = {
+  session: Session | null;
+};
+export async function UserData({ session }: Props) {
   async function signOutAction() {
     "use server";
     await signOut({ redirectTo: "/login" });
