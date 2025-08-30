@@ -10,12 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import PasswordInput from "@/components/passwordInput";
 import LockIcon from "@/ui/icons/lockIcon";
 import EmailIcon from "@/ui/icons/emailIcon";
-import FormSubmitButton from "@/components/formSubmitButton";
 
 import { signIn } from "@/auth";
+import FormSubmitButton from "@/components/costum-components/form-components/formSubmitButton";
+import PasswordInput from "@/components/costum-components/form-components/passwordInput";
 
 const LoginSchema = z.object({
   email: z.string().email("Please enter a valid email."),

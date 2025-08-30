@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/sql/prisma";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -9,8 +9,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getStoredCoinHistory } from "@/services/getStoredCoinHistory";
-import { SavedCoinsList } from "@/components/savedCoinsChart";
+import { SavedCoinsList } from "@/components/costum-components/chart-components/savedCoinsList";
+import { getStoredCoinHistory } from "@/lib/sql/getStoredCoinHistory";
 
 export const metadata = {
   title: "Saved Coins",

@@ -1,4 +1,4 @@
-import { pool } from "../lib/mysql";
+import { pool } from "./mysql";
 
 export async function getStoredCoinHistory(coinId: string) {
   const [rows] = await pool.execute<any[]>(

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { redis, connectRedis } from "@/lib/redis";
+import { redis, connectRedis } from "@/lib/redis/redis";
 
 export async function GET() {
   await connectRedis();

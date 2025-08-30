@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/table";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { DashboardHeader } from "./dashboardheader";
-import { FilterNav } from "./filterButton";
-import { FavoriteButton } from "./favoriteButton";
-import { upsertFavoriteWithMeta } from "@/lib/favorites";
+import { prisma } from "@/lib/sql/prisma";
+import { DashboardHeader } from "./dashboardHeader";
+import { upsertFavoriteWithMeta } from "@/lib/sql/favorites";
+import { FavoriteButton } from "../form-components/favoriteButton";
+import { FilterNav } from "./filterNav";
 
 type Props = {
   allData: CryptoCoin[] | null;

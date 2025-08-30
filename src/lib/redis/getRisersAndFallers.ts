@@ -1,5 +1,5 @@
 import { connectRedis, redis } from "./redis";
-import { REDIS_KEYS } from "../constants/redisKeys";
+import { REDIS_KEYS } from "../../constants/redisKeys";
 import { CryptoCoin } from "@/types/coinType";
 
 export async function getRisersAndFallers(): Promise<

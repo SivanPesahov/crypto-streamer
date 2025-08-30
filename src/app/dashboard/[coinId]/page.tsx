@@ -1,7 +1,7 @@
-import { getRealtimeData } from "@/lib/getRealtimeData";
-import CoinChart from "@/components/CoinChart";
-import { getStoredCoinHistory } from "@/services/getStoredCoinHistory";
-import CoinDetails from "@/components/CoinDetails";
+import CoinChart from "@/components/costum-components/chart-components/coinChart";
+import CoinDetails from "@/components/costum-components/section-components/coinDetails";
+import { getRealtimeData } from "@/lib/redis/getRealtimeData";
+import { getStoredCoinHistory } from "@/lib/sql/getStoredCoinHistory";
 
 type Props = {
   params: {

@@ -1,5 +1,5 @@
-import { pool } from "@/lib/mysql";
-import { prisma as defaultPrisma } from "@/lib/prisma";
+import { pool } from "@/lib/sql/mysql";
+import { prisma as defaultPrisma } from "@/lib/sql/prisma";
 
 export type FavoriteMeta = {
   name?: string;

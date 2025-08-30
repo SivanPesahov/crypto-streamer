@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { upsertFavoriteWithMeta } from "@/lib/favorites";
+import { prisma } from "@/lib/sql/prisma";
+import { upsertFavoriteWithMeta } from "@/lib/sql/favorites";
 
 async function resolveUserId() {
   const session = await auth();

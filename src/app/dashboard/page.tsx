@@ -1,9 +1,9 @@
-import DashboardClient from "@/components/DashboardClient";
-import { getRealtimeData } from "@/lib/getRealtimeData";
-import { getRisersAndFallers } from "@/lib/getRisersAndFallers";
-import UserData from "@/components/userData";
+import DashboardClient from "@/components/costum-components/section-components/dashboardClient";
+import { getRisersAndFallers } from "@/lib/redis/getRisersAndFallers";
+import UserData from "@/components/costum-components/section-components/userData";
 import { auth } from "@/auth";
-import { getInitialFavorites } from "@/lib/getInitialFavorites";
+import { getInitialFavorites } from "@/lib/sql/getInitialFavorites";
+import { getRealtimeData } from "@/lib/redis/getRealtimeData";
 
 export default async function DashboardPage({
   searchParams,

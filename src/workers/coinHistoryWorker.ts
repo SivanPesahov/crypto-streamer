@@ -1,6 +1,6 @@
-import { getCoinHistory } from "../services/getCoinHistory";
-import { pool } from "../lib/mysql";
-import { connectRabbitMQ } from "../lib/rabbitmq";
+import { getCoinHistory } from "../lib/coin-gecko/getCoinHistory";
+import { pool } from "../lib/sql/mysql";
+import { connectRabbitMQ } from "../lib/rabbitmq/rabbitmq";
 
 async function startWorker() {
   const { connection, channel } = await connectRabbitMQ();

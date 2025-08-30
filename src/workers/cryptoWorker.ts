@@ -1,5 +1,5 @@
-import { connectRabbitMQ } from "../lib/rabbitmq";
-import { connectRedis, redis } from "../lib/redis";
+import { connectRabbitMQ } from "../lib/rabbitmq/rabbitmq";
+import { connectRedis, redis } from "../lib/redis/redis";
 import { REDIS_KEYS } from "../constants/redisKeys";
 
 async function startWorker() {

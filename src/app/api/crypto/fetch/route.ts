@@ -1,5 +1,5 @@
-import { fetchFromCoingecko } from "@/lib/fetchFromCoingecko";
-import { publishToQueue } from "@/lib/publishToQueue";
+import { fetchFromCoingecko } from "@/lib/coin-gecko/fetchFromCoingecko";
+import { publishToQueue } from "@/lib/rabbitmq/publishToQueue";
 
 export async function GET() {
   try {

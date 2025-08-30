@@ -1,6 +1,6 @@
-import { connectRedis, redis } from "./redis";
-import { REDIS_KEYS } from "../constants/redisKeys";
 import { CryptoCoin } from "@/types/coinType";
+import { connectRedis, redis } from "./redis";
+import { REDIS_KEYS } from "@/constants/redisKeys";
 
 export async function getRealtimeData(): Promise<CryptoCoin[] | null> {
   await connectRedis();

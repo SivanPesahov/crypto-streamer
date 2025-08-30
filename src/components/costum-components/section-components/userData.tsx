@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import LoginUserDataButton from "./loginUserDataButton";
 import { Session } from "next-auth";
 import Link from "next/link";
+import LoginUserDataButton from "../button-components/loginUserDataButton";
 
 type Props = {
   session: Session | null;
@@ -64,7 +64,7 @@ export async function UserData({ session }: Props) {
           </div>
           <div className="flex items-center gap-2">
             <Button asChild size="sm">
-              <Link href="savedCoins" aria-label="Go to favorite coins">
+              <Link href="saved-coins" aria-label="Go to favorite coins">
                 Favorites
               </Link>
             </Button>

@@ -11,11 +11,11 @@ import {
   CardAction,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import FormSubmitButton from "@/components/formSubmitButton";
 import LockIcon from "@/ui/icons/lockIcon";
 import EmailIcon from "@/ui/icons/emailIcon";
 import UsernameIcon from "@/ui/icons/usernameIcon";
-import PasswordInput from "@/components/passwordInput";
+import FormSubmitButton from "@/components/costum-components/form-components/formSubmitButton";
+import PasswordInput from "@/components/costum-components/form-components/passwordInput";
 
 const RegisterSchema = z.object({
   name: z

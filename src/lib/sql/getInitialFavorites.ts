@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/sql/prisma";
 
 export async function getInitialFavorites(session: any): Promise<string[]> {
   if (!session?.user) return [];

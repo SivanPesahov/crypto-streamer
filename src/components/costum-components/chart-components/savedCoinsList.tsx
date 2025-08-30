@@ -1,5 +1,5 @@
-import SavedCoinSparkline from "./savedCoinChart";
 import Link from "next/link";
+import SavedCoinSparkline from "./savedCoinSparkline";
 
 export function SavedCoinsList({
   savedCoins,

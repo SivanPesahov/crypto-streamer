@@ -1,4 +1,4 @@
-import { getCoinHistory } from "../../../../../services/getCoinHistory";
+import { getCoinHistory } from "../../../../../lib/coin-gecko/getCoinHistory";
 import { NextRequest } from "next/server";
 
 export async function GET(

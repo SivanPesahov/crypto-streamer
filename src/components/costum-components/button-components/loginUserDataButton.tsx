@@ -1,8 +1,8 @@
 import React from "react";
-import { Card, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function LoginUserDataButton() {
   return (

@@ -1,6 +1,6 @@
-import { connectRedis, redis } from "../lib/redis";
+import { connectRedis, redis } from "../lib/redis/redis";
 import { CryptoCoin } from "@/types/coinType";
-import { connectRabbitMQ } from "../lib/rabbitmq";
+import { connectRabbitMQ } from "../lib/rabbitmq/rabbitmq";
 import { REDIS_KEYS } from "../constants/redisKeys";
 
 async function startRisersWorker() {
