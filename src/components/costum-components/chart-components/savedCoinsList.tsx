@@ -35,7 +35,7 @@ export function SavedCoinsList({
               className="text-sm flex items-center gap-2 py-3 first:pt-0 last:pb-0"
             >
               <Link
-                href={`/dashboard/${coin.coinName?.toLocaleLowerCase()}`}
+                href={`/dashboard/${coin.coinId}`}
                 className="flex items-center gap-2 w-full"
               >
                 {meta?.image ? (
