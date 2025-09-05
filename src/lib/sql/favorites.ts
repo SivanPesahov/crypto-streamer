@@ -1,4 +1,3 @@
-import { pool } from "@/lib/sql/mysql";
 import { prisma as defaultPrisma } from "@/lib/sql/prisma";
 
 export type FavoriteMeta = {
@@ -20,18 +19,15 @@ export async function upsertFavoriteWithMeta(
 
   if (!name || !symbol || !image) {
     try {
-      const [rows] = await pool.execute<any[]>(
-        `SELECT name, symbol, image_url AS image
-         FROM daily_prices
-         WHERE coin_id = ?
-         ORDER BY date DESC
-         LIMIT 1`,
-        [coinIdNorm]
-      );
-      if (Array.isArray(rows) && rows.length > 0) {
-        name = name ?? rows[0]?.name ?? undefined;
-        symbol = symbol ?? rows[0]?.symbol ?? undefined;
-        image = image ?? rows[0]?.image ?? undefined;
+      const latest = await prisma.daily_prices.findFirst({
+        where: { coin_id: coinIdNorm },
+        select: { name: true, symbol: true, image_url: true },
+        orderBy: { date: "desc" },
+      });
+      if (latest) {
+        name = name ?? latest.name ?? undefined;
+        symbol = symbol ?? latest.symbol ?? undefined;
+        image = image ?? latest.image_url ?? undefined;
       }
     } catch {}
   }

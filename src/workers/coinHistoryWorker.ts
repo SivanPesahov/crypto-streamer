@@ -1,5 +1,5 @@
 import { getCoinHistory } from "../lib/coin-gecko/getCoinHistory";
-import { pool } from "../lib/sql/mysql";
+import { prisma } from "../lib/sql/prisma";
 import { connectRabbitMQ } from "../lib/rabbitmq/rabbitmq";
 
 async function startWorker() {
@@ -30,40 +30,35 @@ async function startWorker() {
         }
         console.log(`📦 Got ${history.length} entries for: ${coinId}`);
 
-        const connection = await pool.getConnection();
-
-        await connection.execute(`DELETE FROM daily_prices WHERE coin_id = ?`, [
-          coinId,
-        ]);
-
         const groupedByDate = new Map<string, [number, number][]>();
         for (const [timestamp, price] of history) {
           const date = new Date(timestamp).toISOString().split("T")[0];
-          if (!groupedByDate.has(date)) {
-            groupedByDate.set(date, []);
-          }
+          if (!groupedByDate.has(date)) groupedByDate.set(date, []);
           groupedByDate.get(date)!.push([timestamp, price]);
         }
         const dates = Array.from(groupedByDate.keys()).sort();
         const last7Dates = dates.slice(-7);
-        for (const date of last7Dates) {
-          const entries = groupedByDate.get(date)!;
-          const [timestamp, price] = entries[0];
-          console.log(`📥 Inserting for ${coinId} on ${date}: $${price}`);
-          await connection.execute(
-            `INSERT INTO daily_prices (coin_id, symbol, name, image_url, price_usd, date)
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [
-              coinId,
-              symbol?.toUpperCase() ?? coinId.slice(0, 4).toUpperCase(),
-              name ?? coinId,
-              image ?? null,
-              price,
-              date,
-            ]
-          );
-        }
-        connection.release();
+        const symbolValue =
+          symbol?.toUpperCase() ?? coinId.slice(0, 4).toUpperCase();
+        const nameValue = name ?? coinId;
+        const imageValue = image ?? null;
+
+        const rows = last7Dates.map((date) => {
+          const [timestamp, price] = groupedByDate.get(date)![0];
+          return {
+            coin_id: coinId,
+            symbol: symbolValue,
+            name: nameValue,
+            image_url: imageValue,
+            price_usd: price,
+            date: new Date(date),
+          };
+        });
+
+        await prisma.$transaction([
+          prisma.daily_prices.deleteMany({ where: { coin_id: coinId } }),
+          prisma.daily_prices.createMany({ data: rows }),
+        ]);
 
         console.log(`✅ Saved history for ${coinId}`);
         channel.ack(msg);
